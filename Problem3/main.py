@@ -77,6 +77,20 @@ def cov_images_optim(A, debug=False):
     tracemalloc.clear_traces()
 
     ### TODO: fill in here ###
+    
+    n,h,w = A.shape
+    
+    A = A.reshape((n,h*w))
+    # A = A.resize((n,h*w))
+
+    # del A2
+    # A.shape = (n,-1)
+    mean = np.mean(A,axis=(1),keepdims=True)
+    A -= mean
+    del mean
+    covs = np.matmul(A, A.T)
+    del A
+
 
     ##########################
 
