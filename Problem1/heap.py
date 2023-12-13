@@ -18,9 +18,11 @@ class MinHeap:
 
     def pop(self):
         # TODO : FILL IN HERE
+        value = self.heap[0]
         self.heap[0] = self.heap[len(self.heap)-1]
         self.heap.pop()
         self.heapify()
+        return value
 
     def heapify(self):
         # TODO : FILL IN HERE
