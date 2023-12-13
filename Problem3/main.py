@@ -79,17 +79,22 @@ def cov_images_optim(A, debug=False):
     ### TODO: fill in here ###
     
     n,h,w = A.shape
+
+    A = np.reshape(A,(n,h*w), order="F")
     
-    A = A.reshape((n,h*w))
+    # A = A.reshape((n,h*w))
     # A = A.resize((n,h*w))
 
     # del A2
     # A.shape = (n,-1)
     mean = np.mean(A,axis=(1),keepdims=True)
     A -= mean
-    del mean
+    # del mean
     covs = np.matmul(A, A.T)
-    del A
+    # print(np.shares_memory(A.shape, A.T.shape))
+    # covs = np.tensordot(A,A, axes=([1,2],[1,2]))
+    # print(covs.shape)
+    # del A
 
 
     ##########################
@@ -117,7 +122,7 @@ def cov_images_optim(A, debug=False):
     return covs, total_mem
 
 def main():
-    debug=False
+    debug=True
     A = np.asfortranarray(np.random.rand(B, H, W))
     answer, base_mem = cov_images_base(A, debug)
     output, mem = cov_images_optim(A, debug)
@@ -129,7 +134,7 @@ def main():
 
     t = Timer(lambda: cov_images_optim(A, False))
     inf_time = t.timeit(number=100)
-
+    # print(inf_time, base_inf_time)
     assert base_inf_time * 0.15 > inf_time, f"Too slow, Base: {base_inf_time} / You: {inf_time}"
 
     print("Success!!")
