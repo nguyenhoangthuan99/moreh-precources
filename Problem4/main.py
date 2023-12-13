@@ -66,6 +66,17 @@ if __name__ == "__main__":
     Save and submit a portion of the processed 32 images. 
     You are free to choose any number of images (recommend 4~8)."
     '''
+    # print(np.mean(result_x),np.mean(result_y))
+    result_x = np.sqrt(result_x**2)
+    result_y = np.sqrt(result_y**2)
+    
+    for i in range(result.shape[0]):
+        result[i] = (result[i]/np.max(result[i]) * 255 ).astype(np.uint8)
+        result_y[i] = (result_y[i]/np.max(result_y[i]) * 255 ).astype(np.uint8)
+        result_x[i] = (result_x[i]/np.max(result_x[i]) * 255 ).astype(np.uint8)
+        cv2.imwrite(f"result/{i}.png",result[i])
+        cv2.imwrite(f"result_x/{i}.png",result_x[i])
+        cv2.imwrite(f"result_y/{i}.png",result_y[i])
     import random
     from matplotlib import pyplot as plt 
   
@@ -80,8 +91,8 @@ if __name__ == "__main__":
     fig.add_subplot(rows, columns, 1) 
   
 # showing image 
-    plt.imshow(saved[0],cmap='gray') 
-    plt.axis('off') 
+    plt.imshow(saved[0],cmap='gray')
+    plt.axis('off')
     plt.title("First") 
     
     # Adds a subplot at the 2nd position 

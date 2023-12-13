@@ -1,5 +1,11 @@
 from sys import stdin
 
+class Node(object):
+    def __init__(self, value) -> None:
+        self.value = value
+        self.left = None
+        self.right = None
+
 def width_of_binary_tree(args):
     '''
     Calculate the widest level and the width of that level
@@ -20,6 +26,7 @@ def width_of_binary_tree(args):
 def main():
 
     ### TODO: You are free to define the input value of the function as you wish. ###
+
 
     output = width_of_binary_tree(args)
 
