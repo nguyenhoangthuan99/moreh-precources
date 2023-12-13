@@ -1,8 +1,9 @@
 from sys import stdin
 from timeit import Timer
-Numnode = 0
+
 class Node(object):
     def __init__(self, value) -> None:
+        self.parent = None
         self.value = value
         self.left = None
         self.right = None
@@ -28,6 +29,12 @@ def width_of_binary_tree(args):
     nodes = args["nodes"]
     levels = {}
     col = {"value":1}
+
+    def find_root(node):
+        if node.parent is None: 
+            return node.value
+        else:
+            return find_root(node.parent)
     
     def travel(node, level=1, col = col):
         global Numnode
@@ -41,12 +48,14 @@ def width_of_binary_tree(args):
         a.append(col["value"] )
         levels[level] = a
         col["value"] +=1
-        Numnode += 1
         travel(node.right, level=level+1, col=col)
 
     widest_level =1
     max_width = 1
-    travel(nodes[1])
+
+    root = find_root(nodes[1])
+
+    travel(nodes[root])
 
     for level, info in levels.items():
         for i in range(1,len(info)):
@@ -54,16 +63,13 @@ def width_of_binary_tree(args):
                 max_width = info[i] - info[i-1] + 1
                 widest_level = level
 
+    # levels = {}
+    # col = {"value":1}
+
     ##########################
     # print("num node",Numnode)
     return widest_level, max_width
-def test(node):
-    global Numnode
-    if node is None: return
-    Numnode += 1
-    test(node.left)
-    
-    test(node.right)
+
 def main():
 
     ### TODO: You are free to define the input value of the function as you wish. ###
@@ -78,26 +84,25 @@ def main():
         if current is None:
             nodes[val] = Node(val)
         if left > -1:
-            if not nodes.get(left): nodes[left] = Node(left)
+            if left not in nodes: 
+                nodes[left] = Node(left)
             nodes[val].left = nodes[left]
+            nodes[left].parent = nodes[val]
         if right > -1:
-            if not nodes.get(right): nodes[right] = Node(right)
+            if right not in nodes: 
+                nodes[right] = Node(right)
             nodes[val].right = nodes[right]
-    print(len(nodes))
+            nodes[right].parent = nodes[val]
+    # print(len(nodes))
 
     args = {"nodes":nodes}
 
-    global Numnode
-    test(nodes[1])
-    print("numnode ",Numnode)
-
     output = width_of_binary_tree(args)
     print(output)
-
     
-    # t = Timer(lambda: width_of_binary_tree(args))
-    # base_inf_time = t.timeit(number=1000)
-    # print(base_inf_time)
+    t = Timer(lambda: width_of_binary_tree(args))
+    base_inf_time = t.timeit(number=1000)
+    print(base_inf_time)
 
     with open("output.txt", "w") as f:
         f.write(f"{output[0]} {output[1]}\n")
