@@ -72,17 +72,22 @@ if __name__ == "__main__":
             value = int(line.strip())
             min_heap.push(value)
         # min_heap.pop()
-        # array = [int(x.strip()) for x in lines]
+        array = [int(x.strip()) for x in lines]
     
 
-    # print("Min heap : ", min_heap.heap)
-    # min_heap.heap = array
-    # min_heap.heapify()
-    # print(min_heap.heap)
-    # import heapq
-    # heapq.heapify(array)
-    # print(array)
-    # heapq.heappop(array)
-    # min_heap.pop()
-    # print(min_heap.heap)
-    # print(array)
+    print("Min heap : ", min_heap.heap)
+    print("-"*20)
+    min_heap.heap = array
+    print("compare result with heapq standard python library")
+    print("heapify function:")
+    min_heap.heapify()
+    print("Result of my algorithm:", min_heap.heap)
+    import heapq
+    heapq.heapify(array)
+    print("Result of heapq:       ",array)
+    print("-"*20)
+    print("pop function: ")
+    heapq.heappop(array)
+    min_heap.pop()
+    print("Result of my algorithm:",min_heap.heap)
+    print("Result of heapq:       ",array)
