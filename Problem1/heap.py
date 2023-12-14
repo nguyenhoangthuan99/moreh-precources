@@ -55,9 +55,8 @@ class MinHeap:
     def heapify(self):
         # TODO : FILL IN HERE
 
-
         try:
-            for i in reversed(range(0, len(self.heap) //2+1)):
+            for i in reversed(range(0, len(self.heap) //2)):
                 self._heapify(i)
                 
         except Exception as e:
@@ -77,7 +76,7 @@ if __name__ == "__main__":
 
     print("Min heap : ", min_heap.heap)
     print("-"*20)
-    min_heap.heap = array
+    min_heap.heap = array.copy()
     print("compare result with heapq standard python library")
     print("heapify function:")
     min_heap.heapify()
@@ -87,7 +86,8 @@ if __name__ == "__main__":
     print("Result of heapq:       ",array)
     print("-"*20)
     print("pop function: ")
-    heapq.heappop(array)
     min_heap.pop()
+    heapq.heappop(array)
+    
     print("Result of my algorithm:",min_heap.heap)
     print("Result of heapq:       ",array)
