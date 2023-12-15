@@ -1,5 +1,5 @@
 import numpy as np
-import cv2
+import cv2, time
 import pickle
 
 def load_image(file_path):
@@ -36,7 +36,7 @@ def apply_convolution(images, kernel, stride=1, padding=0):
     for i in range(out_h):
         for j in range(out_w):
             # print(i,j)
-            output_images[:,i,j] = np.sum(images[:,i*stride:i*stride+kernel_H, j*stride :j*stride+kernel_W]*kernel,axis = (1,2))
+            output_images[:,i,j] = np.sum(np.multiply(images[:,i*stride:i*stride+kernel_H, j*stride :j*stride+kernel_W],kernel),axis = (1,2))
 
     
     # print(output_images.shape)
@@ -54,13 +54,13 @@ if __name__ == "__main__":
     # Sobel filter
     sobel_x = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
     sobel_y = np.array([[-1, -2, -1], [0, 0, 0], [1, 2, 1]])
-
+    start = time.time()
     result_x = apply_convolution(input_images, sobel_x, stride=1, padding=1)
     result_y = apply_convolution(input_images, sobel_y, stride=1, padding=1)
 
     # Combine the results
     result = np.sqrt(result_x**2 + result_y**2)
-    
+    print(time.time()-start)
     '''
     =================================================================================================
     Save and submit a portion of the processed 32 images. 
