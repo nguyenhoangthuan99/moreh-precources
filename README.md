@@ -56,6 +56,14 @@ This function is used to transform an array to heap structure. This task can be 
 
 In this function, the ```_heapify()``` is called n//2 times. So the total time complexity upper bound of heapify is O(n log(n))
 
+### Experiment result
+
+![1702619441057](images/README/1702619441057.png)
+
+In this problem, it ouput to terminal the result of push operation.
+
+Then I compare results of pop and heapify function with a python standard library *heapq*. Both of outputs are the same.
+
 ### 2. Dijkstra with min heap
 
 Firstly, we will define some variables:
@@ -97,4 +105,66 @@ The time complexity of push and pop element in heap is O(log(V)), and we need to
 
 (*) The maximum number of edge in a graph is V^2, so the min heap is only better if the graph is sparse.
 
+The run result is shortest path from source to every node
+
+![1702619940342](images/README/1702619940342.png)
+
 ## Problem 2
+
+The idea of this problem is, the index of column in grid is the index of node in tree when apply in order traversal. To solve this problem we will travel the tree inorder  then save the level and column number for each node, and use that infomation to calculate the widest level.
+
+Let's define some data structures:
+
+#### Node
+
+A node structure has the following attribute:
+
+- left: point to left children
+- right: point to right children
+- value: the name of node
+- parent: point to parent node, the parent attribute is used to find the root node when in hard test, we don't know what is root.
+
+### Levels
+
+A python dictionary map the level and list of index column in that level.
+
+levels = map< Level , List< ColumnIndex> >
+
+### Algorithm
+
+To make algorithm more generic, we need to find the root node in case the root is not the node 1. The algorithm has 3 parts: find root node, do in-order traversal, find the widest_level and max_width. 
+
+#### 1. Find root node
+
+This part can start at any node *i*, if parent[i] is None -> *i* is root node, else we continue do the same procedure with parent[i]. Python implementation is described as follow:
+
+![1702633809713](images/README/1702633809713.png)
+
+The worst case of this algorithm is O(n) with n is number of node in tree.
+
+#### 2. In-order traversal
+
+This part, we need to do travel the left child, the current node and the last is right child. At each step we need to append the column index to levels map. The python implementation is as followed
+
+![1702634360401](images/README/1702634360401.png)
+
+At each node, we do a constant number of operation, and we need to travel all nodes, so the time complexity of this algorithm is O(n) with n is total number of node in tree.
+
+#### 3. Find result
+
+Through the tree traversal process, a list column index of a level is in incresing number automatically, so we don't need to order this list again. The process is:
+
+- set max_width = 1, widest_level = 1
+- for each level *i* in levels:
+  - for each column *col* in levels[i]:
+    - if max_width < dist(col) : max_width = dist(col); widest_level = i; with dist(col) is the distance of 2 consecutive column start at *col*
+
+![1702639414224](images/README/1702639414224.png)
+
+For this step, every node of graph corresponding to a col will be considered once, so the time comlexity is O(n).
+
+So the total complexity of algorithm is O(n).
+
+![1702639550523](images/README/1702639550523.png)
+
+The experiment result run on hard test (the root node is not 1) shows that the algorithm runs 1000 times in 3.86s -> with a tree has 10000 nodes, my algorithm can run in average 4ms.

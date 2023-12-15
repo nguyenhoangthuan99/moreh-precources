@@ -7,8 +7,8 @@ class Node(object):
         self.value = value
         self.left = None
         self.right = None
-        self.column = None
-        self.level = None
+        # self.column = None
+        # self.level = None
 
 class Tree(object):
     def __init__(self,root: Node):
@@ -40,10 +40,10 @@ def width_of_binary_tree(args):
         global Numnode
         if node is None: return
         # print(node.value)
-        node.level = level
+        # node.level = level
         travel(node.left, level=level+1, col=col)
         
-        node.column = col["value"] 
+        # node.column = col["value"] 
         a = levels.get(level,[])
         a.append(col["value"] )
         levels[level] = a
@@ -100,9 +100,9 @@ def main():
     output = width_of_binary_tree(args)
     print(output)
     
-    t = Timer(lambda: width_of_binary_tree(args))
-    base_inf_time = t.timeit(number=1000)
-    print(base_inf_time)
+    # t = Timer(lambda: width_of_binary_tree(args))
+    # base_inf_time = t.timeit(number=1000)
+    # print("total time run 1000 times algorithm:",base_inf_time,"s")
 
     with open("output.txt", "w") as f:
         f.write(f"{output[0]} {output[1]}\n")
