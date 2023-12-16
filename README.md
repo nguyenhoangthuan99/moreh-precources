@@ -218,7 +218,6 @@ The einsum operation "jk,ijk->i" will define the sum and multiply operation. "jk
 
 The einsum can make the process faster, take **0.56s** for batch 32 images.
 
-
 When apply only x-filter, the algorithm can recognize the edge in column directions.
 
 ![1702709856342](images/README/1702709856342.png)
@@ -227,6 +226,6 @@ While y-filter can make algorithm recognize edge in row directions.
 
 ![1702709934859](images/README/1702709934859.png)
 
-
-
 When combine both result it can show the edge of object
+
+![1702709981799](images/README/1702709981799.png)
