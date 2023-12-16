@@ -82,11 +82,12 @@ def cov_images_optim(A, debug=False):
 
     A = np.reshape(A,(n,h*w), order="F")
     
-    mean = np.asfortranarray(np.mean(A,axis=(1),keepdims=True))
-    np.subtract(A,mean, out=A, order="F")
-    # del mean
-    covs = A@A.T
-    # covs = None
+    mean = np.mean(A,axis=(1),keepdims=True)
+    A-=mean
+    # np.subtract(A,mean, out=A, order="F")
+    # covs = A@A.T
+    covs = np.matmul(A,A.T)
+    # covs = np.cov(A)*n
 
 
     ##########################
@@ -118,14 +119,14 @@ def main():
     A = np.asfortranarray(np.random.rand(B, H, W))
     answer, base_mem = cov_images_base(A, debug)
     output, mem = cov_images_optim(A, debug)
-    # assert np.linalg.norm(answer - output) < 1e-9, f"Wrong Answer, Diff: {np.linalg.norm(answer - output)}"
+    assert np.linalg.norm(answer - output) < 1e-9, f"Wrong Answer, Diff: {np.linalg.norm(answer - output)}"
     assert base_mem * 0.1 > mem, f"Too many memory usage, Base: {base_mem} / You: {mem}"
 
     t = Timer(lambda: cov_images_base(A, False))
-    base_inf_time = t.timeit(number=1000)
+    base_inf_time = t.timeit(number=100)
 
     t = Timer(lambda: cov_images_optim(A, False))
-    inf_time = t.timeit(number=1000)
+    inf_time = t.timeit(number=100)
     # print(inf_time, base_inf_time)
     assert base_inf_time * 0.15 > inf_time, f"Too slow, Base: {base_inf_time} / You: {inf_time}"
 

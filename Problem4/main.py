@@ -19,24 +19,29 @@ def apply_convolution(images, kernel, stride=1, padding=0):
         + output_images: np.array of shape (B, input_H, input_W)
     '''
     ### TODO: fill in here ###
-    images = np.pad(images,((0,0),(padding,padding),(padding,padding)))/255.
+    
     # print(images.shape
     # print(images.shape)
-    output_images = []
+    # output_images = []
     # for image in images:
     #     output_images.append(cv2.filter2D(image, -1,kernel ) )#cv2.flip(kernel, -1), borderType=cv2.BORDER_CONSTANT
-
+    images = np.pad(images,((0,0),(padding,padding),(padding,padding)))/255.
     kernel_H, kernel_W = kernel.shape
     n,H,W = images.shape
     out_h = (H-kernel_H)//stride +1
     out_w = (W-kernel_W) // stride + 1
     # print(out_h,out_w)
     output_images = np.zeros((n,out_h,out_w))
-    kernel = np.array([kernel])
+    # kernel = np.array([kernel])
     for i in range(out_h):
         for j in range(out_w):
             # print(i,j)
-            output_images[:,i,j] = np.sum(np.multiply(images[:,i*stride:i*stride+kernel_H, j*stride :j*stride+kernel_W],kernel),axis = (1,2))
+            ith = i*stride
+            jth = j*stride
+            output_images[:,i,j] = np.einsum("jk,ijk->i",kernel,images[:,ith:ith+kernel_H, jth :jth+kernel_W]) 
+            # output_images[:,i,j] = \
+            #     np.sum(np.multiply(images[:,i*stride:i*stride+kernel_H, \
+            #                                 j*stride :j*stride+kernel_W],kernel),axis = (1,2))
 
     
     # print(output_images.shape)
@@ -60,7 +65,7 @@ if __name__ == "__main__":
 
     # Combine the results
     result = np.sqrt(result_x**2 + result_y**2)
-    print(time.time()-start)
+    print("Total time execute 1 batch 32 images",time.time()-start)
     '''
     =================================================================================================
     Save and submit a portion of the processed 32 images. 
@@ -86,7 +91,7 @@ if __name__ == "__main__":
     # setting values to rows and column variables 
     rows = 2
     columns = 2
-    saved = result[:4]
+    saved = result_y[:4]
     # saved = saved.astype(np.uint8)
     fig.add_subplot(rows, columns, 1) 
   
@@ -118,7 +123,7 @@ if __name__ == "__main__":
     plt.imshow(saved[3],cmap='gray') 
     plt.axis('off') 
     plt.title("Fourth") 
-    plt.savefig("result.png")
+    # plt.savefig("result_y.png")
     # plt.show()
 
 

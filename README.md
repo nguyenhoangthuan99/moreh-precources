@@ -132,7 +132,7 @@ levels = map< Level , List< ColumnIndex> >
 
 ### Algorithm
 
-To make algorithm more generic, we need to find the root node in case the root is not the node 1. The algorithm has 3 parts: find root node, do in-order traversal, find the widest_level and max_width. 
+To make algorithm more generic, we need to find the root node in case the root is not the node 1. The algorithm has 3 parts: find root node, do in-order traversal, find the widest_level and max_width.
 
 #### 1. Find root node
 
@@ -168,3 +168,65 @@ So the total complexity of algorithm is O(n).
 ![1702639550523](images/README/1702639550523.png)
 
 The experiment result run on hard test (the root node is not 1) shows that the algorithm runs 1000 times in 3.86s -> with a tree has 10000 nodes, my algorithm can run in average 4ms.
+
+## Problem 3
+
+### Optimize inference time
+
+The key to optimize inference time is broadcasting. The original code using for loop and consider each image and explixit broadcast mean to a matrix has the same shape with image.
+
+Here is my solution:
+
+- The array A has shape (n,h,w) -> reshape to (n, h*w)
+- calculate mean = np.mean(A, axis =1, keep dims = True), this operation will calculate the mean of each image in *n* images, while keeping the last axis. For that reason, the *mean* array has shape (n,1)
+- call np.subtract(A,mean, out=A), this operation will internal broadcasting the axis 1 of mean to axis 1 of A, and then save to result to A. This operation corresponding to subtract each image with its mean value.
+- The last operation is do matrix multiply which is the same with original code
+
+### Optimize memory
+
+The key to optimize memory is the order of element in array in the memory level. The array *A* is an fortran array - index the elements in column-major, while the default order of numpy is always  "C" style - rows major.  For this reason, when call A.reshape, it will allocate new memory with "C" order for array A.
+
+To optimize this, just add the option order="F" for reshape function of numpy.
+
+![1702706529049](images/README/1702706529049.png)
+
+And this code can pass 2 tests
+
+![1702642521568](images/README/1702642521568.png)
+
+## Problem 4
+
+In this problem, in order to improve inference time, I need to do filter on all images at the same time using numpy broadcasting.
+
+![1702709050800](images/README/1702709050800.png)
+
+- Firstly, we need to pad the image with zero padding and normalize image by devide by 255
+- Then, calculate the output shape base on original shape, kernel size and stride.
+- for each pixel in output array, apply filter on every image at the same time.
+
+This implementation cost **0.78s** for 1 batch 32 images.
+
+We still can optimize this time by apply numpy einsum
+
+```
+output_images[:,i,j] = np.einsum("jk,ijk->i",\
+                                  kernel,images[:,ith:ith+kernel_H, \
+                                                  jth :jth+kernel_W]) 
+```
+
+The einsum operation "jk,ijk->i" will define the sum and multiply operation. "jk,ijk->" mean the kernel has 2 dimensions "jk", the image piece has 3 dimensions "ijk", so "jk,ijk" means the kernel "jk" will be broadcasting to all axis i of image piece and do point-wise multiply. "->i" means the result "ijk" will be sum over the "jk" axis to produce only "i" axis.
+
+The einsum can make the process faster, take **0.56s** for batch 32 images.
+
+
+When apply only x-filter, the algorithm can recognize the edge in column directions.
+
+![1702709856342](images/README/1702709856342.png)
+
+While y-filter can make algorithm recognize edge in row directions.
+
+![1702709934859](images/README/1702709934859.png)
+
+
+
+When combine both result it can show the edge of object
