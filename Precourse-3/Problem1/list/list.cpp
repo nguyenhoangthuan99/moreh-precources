@@ -11,29 +11,41 @@ namespace getp {
 template <class T>
 list<T>::Node::Node(const T &value) {
   // TODO : FILL IN HERE
+  data = value;
+  next = nullptr;
+  prev = nullptr;
 }
 
 // iterator implementation
 template <class T> list<T>::iterator::iterator(Node *node) {
   // TODO : FILL IN HERE
+  current = &node;
 }
 
 template <class T> T &list<T>::iterator::operator*() const {
   // TODO : FILL IN HERE
+  return current->data;
 }
 
 template <class T> typename list<T>::iterator &list<T>::iterator::operator++() {
   // TODO : FILL IN HERE
+  current = current->next;
+  return *this;
 }
 
 template <class T>
 typename list<T>::iterator list<T>::iterator::operator++(int) {
   // TODO : FILL IN HERE
+  iterator temp = *this;
+  current = current->next;
+  return temp;
+  
 }
 
 template <class T>
 bool list<T>::iterator::operator!=(const iterator &other) const {
   // TODO : FILL IN HERE
+  return current == other.current;
 }
 
 // Rest of the list class implementation
@@ -47,7 +59,7 @@ list<T>::list(const list &other) {
 }
 
 template <class T>
-list<T>::list(std::initializer_list<T> initList)
+list<T>::list(std::initializer_list<T> initList){
   // TODO : FILL IN HERE
 }
 
