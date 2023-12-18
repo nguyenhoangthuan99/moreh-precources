@@ -62,6 +62,14 @@ class MinHeap:
         except Exception as e:
             print(e)
 
+def test(heap):
+    n = len(heap)
+    for i in range(1,n):
+        parent = (i-1)//2
+        if heap[i] < heap[parent]:
+            return False
+    return True
+
 if __name__ == "__main__":
     min_heap = MinHeap()
 
@@ -91,3 +99,6 @@ if __name__ == "__main__":
     
     print("Result of my algorithm:",min_heap.heap)
     print("Result of heapq:       ",array)
+
+    print(test(array))
+    print(test(min_heap.heap))
