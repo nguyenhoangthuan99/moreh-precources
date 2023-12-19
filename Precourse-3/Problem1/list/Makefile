@@ -1,6 +1,6 @@
 CXX=mpic++
 
-CFLAGS=-std=c++14 -O3 -Wall -march=native -I/usr/local/include -g
+CFLAGS=-std=c++14 -O3 -Wall -march=native -I/usr/local/include
 LDFLAGS=-L/usr/local/lib
 LDLIBS=-lstdc++
 

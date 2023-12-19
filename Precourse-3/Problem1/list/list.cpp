@@ -37,7 +37,9 @@ template <class T>
 typename list<T>::iterator list<T>::iterator::operator++(int) {
   // TODO : FILL IN HERE
   // current = current->next;
-  return iterator (current->next);
+  current = current->next;
+  return iterator (current);
+   //
   
 }
 
@@ -53,14 +55,14 @@ template <class T> list<T>::list(){
   this->head = nullptr;
   this->tail = nullptr;
   this->size_ = 0;
-
 }
 
 template <class T>
 list<T>::list(const list &other) {
   // TODO : FILL IN HERE
+  new (this) list();
   this->size_ = 0;
-  for(iterator it = other.cbegin(); it != other.cend() ; it++){
+  for(iterator it = other.cbegin(); it != other.cend() ; ++it){
     this->push_back(*it);
   }
 }
@@ -69,12 +71,13 @@ template <class T>
 list<T>::list(std::initializer_list<T> initList){
   // TODO : FILL IN HERE
   this->size_ = 0;
-  for (auto it = initList.begin();it!=initList.end(),it++){
+  new (this) list();
+  for (auto it = initList.begin();it!=initList.end(); ++it){
     this->push_back(*it);
   }
 }
 
-template <class T> list<T>::~list() { 
+template <class T> list<T>::~list() {
   // TODO : FILL IN HERE
   this->clear();
   this->size_ = 0;
@@ -87,6 +90,7 @@ template <class T> list<T> &list<T>::operator=(const list &other) {
   for(iterator it = other.cbegin(); it != other.cend() ; it++){
     this->push_back(*it);
   }
+  return *this;
 }
 
 template <class T> void list<T>::push_back(const T &value) {
@@ -173,13 +177,13 @@ template <class T> void list<T>::emplace_front(T &&value) {
 
 template <class T> std::size_t list<T>::size() const {
   // TODO : FILL IN HERE
-  return this->size_
+  return this->size_;
 }
 
 
 template <class T> void list<T>::print() const {
   // TODO : FILL IN HERE
-  for(iterator it = other.cbegin(); it != other.cend() ; it++){
+  for(iterator it = this->cbegin(); it != this->cend() ; it++){
     std::cout << *it << " ";
   }
   
@@ -195,35 +199,42 @@ template <class T> void list<T>::clear() {
 
 template <class T> typename list<T>::iterator list<T>::begin() {
   // TODO : FILL IN HERE
-  
+  return iterator(this->head);
 }
 
 template <class T> typename list<T>::iterator list<T>::end() {
   // TODO : FILL IN HERE
+  return iterator(nullptr);
 }
 
 template <class T> typename list<T>::iterator list<T>::cbegin() const {
   // TODO : FILL IN HERE
+  return iterator(this->head);
 }
 
 template <class T> typename list<T>::iterator list<T>::cend() const {
   // TODO : FILL IN HERE
+  return iterator(nullptr);
 }
 
 template <class T> typename list<T>::iterator list<T>::rbegin() {
   // TODO : FILL IN HERE
+  return iterator(nullptr);
 }
 
 template <class T> typename list<T>::iterator list<T>::rend() {
   // TODO : FILL IN HERE
+  return iterator(this->head);
 }
 
 template <class T> typename list<T>::iterator list<T>::crbegin() const {
   // TODO : FILL IN HERE
+  return iterator(nullptr);
 }
 
 template <class T> typename list<T>::iterator list<T>::crend() const {
   // TODO : FILL IN HERE
+  return iterator(this->head);
 }
 
 } // namespace getp
