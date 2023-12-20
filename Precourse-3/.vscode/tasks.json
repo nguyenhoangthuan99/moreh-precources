@@ -8,7 +8,7 @@
                 "CFLAGS=\"-std=c++14 -O3 -Wall -I/usr/local/include -g\""
             ],
             "options": {
-                "cwd": "/home/thuan/moreh-precources/Precourse-3/Problem1/list"
+                "cwd": "/home/thuan/moreh-precources/Precourse-3/Problem1/vector"
             },
             "problemMatcher": [
                 "$gcc"
