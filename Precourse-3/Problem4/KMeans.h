@@ -3,12 +3,16 @@
 #define KMEANS_H
 
 #include <vector>
+#include "Point.h"
 
 class KMeans {
 private:
     std::vector<Point> data_points;
     std::vector<Point> centroids;
+    std::vector<int> points_cluster;
     int k;
+    double epsilon;
+    bool stop;
 
 public:
     KMeans(int num_points, int k);

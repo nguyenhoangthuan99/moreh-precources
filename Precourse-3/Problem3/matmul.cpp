@@ -32,17 +32,19 @@ void matmul_c_interface(py::array_t<float> A, py::array_t<float> B, py::array_t<
   float *ptr_B = static_cast<float *>(B_buf.ptr);
   float *ptr_C = static_cast<float *>(C_buf.ptr);
 
-  for (int i = 0 ; i < M ; ++i)
-  {
-    for (int k = 0 ; k < K ; ++k)
-    {
-      float tmp = ptr_A[i * K + k];
-      for (int j = 0 ; j < N ; ++j)
-      {
-        ptr_C[i * N + j] += tmp * ptr_B[k * N + j];
-      }
-    }
-  }
+  matmul_c(ptr_A,ptr_B,ptr_C,M,N,K);
+
+  // for (int i = 0 ; i < M ; ++i)
+  // {
+  //   for (int k = 0 ; k < K ; ++k)
+  //   {
+  //     float tmp = ptr_A[i * K + k];
+  //     for (int j = 0 ; j < N ; ++j)
+  //     {
+  //       ptr_C[i * N + j] += tmp * ptr_B[k * N + j];
+  //     }
+  //   }
+  // }
 
 }
 
