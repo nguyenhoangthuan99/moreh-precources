@@ -81,7 +81,11 @@ template <typename T> vector<T> &vector<T>::operator=(vector &&other) noexcept {
 
 template <typename T> T &vector<T>::at(size_t index) {
   // TODO : FILL IN HERE
+    if(index>= this->size){
+      throw std::out_of_range( "Index out of range" );
+    }
     return this->data_[index];
+
 }
 
 template <typename T> T &vector<T>::operator[](size_t index) {
@@ -139,13 +143,17 @@ template <typename T>
 template <typename... Args>
 void vector<T>::emplace_back(Args &&... args) {
   // TODO : FILL IN HERE
-
+  this->push_back(T(std::forward<Args>(args)...));
 }
 
 template <typename T>
 template <typename InputIt>
 void vector<T>::append_range(InputIt first, InputIt last) {
   // TODO : FILL IN HERE
+  for(InputIt it=first;it!=last;i++){
+    this->push_back(*it);
+  }
+
 }
 
 template <typename T> void vector<T>::pop_back() {
