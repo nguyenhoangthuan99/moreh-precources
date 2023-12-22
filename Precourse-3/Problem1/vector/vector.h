@@ -29,6 +29,7 @@ public:
   T *data();
 
   size_t getSize() const;
+  size_t getCapacity() const;
 
   void push_back(const T &value);
 
