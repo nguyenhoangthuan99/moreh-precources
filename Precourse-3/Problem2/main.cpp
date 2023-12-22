@@ -7,9 +7,11 @@
 #define MAX_AUTHOR_NAME 16
 #define MAX_BOOKS 2
 
+
 // You CAN NOT REMOVE or CHANGE exist declaration
 // But, CAN ADD whatever you want
-
+#include <fstream>
+#include <iostream>
 
 // Total 54 bytes data
 typedef struct book_{
@@ -29,6 +31,23 @@ void serialize(char* path, library* lib, int number_of_books){
     pseudo implement, please remove
     write(path, lib->books);
   */
+  
+  // freopen(path,"w",stdout);
+  FILE* fp = fopen(path,"w");
+  for (int idx = 0 ; idx < number_of_books;idx++){
+    fwrite(&lib->books[idx].title,1,sizeof(lib->books[idx].title),fp);
+    fwrite(&lib->books[idx].author,1,sizeof(lib->books[idx].author),fp);
+    fwrite(&lib->books[idx].volume_number,1,sizeof(lib->books[idx].volume_number),fp);
+    fwrite(&lib->books[idx].ISBN,1,sizeof(lib->books[idx].ISBN),fp);
+  }
+  fclose(fp);
+  std::cout<<"done"<<std::endl;
+
+  // serialize whole object
+  
+  // fwrite(lib->books , number_of_books , sizeof(lib->books[0]) , fp );
+  // fclose(fp);
+  // std::cout<<"size of a book when call serialize whole object: "<<sizeof(lib->books[0])<<std::endl;
 }
 
 // Function to load the books data of the library
@@ -37,6 +56,22 @@ void deserialize(char* path, library *lib, int number_of_books){
     pseudo implement, please remove
     read(path, lib->books);
   */
+ FILE* fp = fopen(path,"r");
+  for (int idx = 0 ; idx < number_of_books;idx++){
+    fread(&lib->books[idx].title,sizeof(lib->books[idx].title),1,fp);
+    fread(&lib->books[idx].author,sizeof(lib->books[idx].author),1,fp);
+    fread(&lib->books[idx].volume_number,sizeof(lib->books[idx].volume_number),1,fp);
+    fread(&lib->books[idx].ISBN,sizeof(lib->books[idx].ISBN),1,fp);
+  }
+  fclose(fp);
+
+ // deserialize whole object
+//  FILE* fp = fopen(path,"r");
+//  std::size_t s =  fread (lib->books, sizeof(lib->books[0]), number_of_books, fp);
+//  fclose(fp);
+
+//  std::cout<< "Total bytes read from file: "<<s<<std::endl;
+
 }
 
 // Function to fill defaults data
@@ -76,7 +111,7 @@ int main(int argc, char* argv[]){
   void* memory_pool = malloc(54 * MAX_BOOKS * 2);
 
   lib.books = (book*)memory_pool;
-  backup.books = (books*)((char*)(memory_pool + 54 * MAX_BOOKS));
+  backup.books = (book*)((char*)memory_pool + 54 * MAX_BOOKS);
 
   insert_books(&lib);
   print_contents(&lib);
@@ -87,10 +122,7 @@ int main(int argc, char* argv[]){
   // load the data to backup instance
   deserialize("data.bin", &backup, MAX_BOOKS);
 
-  // Check the loaded value
-  print_contents(&lib);
-
-  // The original value might be changed ?
+  // The value might be changed ?
   print_contents(&backup);
 
   return 0;

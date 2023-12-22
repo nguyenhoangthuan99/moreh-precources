@@ -150,7 +150,7 @@ template <typename T>
 template <typename InputIt>
 void vector<T>::append_range(InputIt first, InputIt last) {
   // TODO : FILL IN HERE
-  for(InputIt it=first;it!=last;i++){
+  for(InputIt it=first;it!=last;it++){
     this->push_back(*it);
   }
 
