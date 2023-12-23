@@ -546,7 +546,7 @@ void deserialize(char* path, library *lib, int number_of_books){
 }
 ```
 
-When execute the program it will output like this 
+When execute the program it will output like this
 
 ![1703330485257](images/README/1703330485257.png)
 
@@ -557,3 +557,46 @@ The size of `data.bin` on disk is decrese to 108 bytes
 ---
 
 ## Problem 3
+
+In this problem we need to implement an interface using pybind11 to use the matmul function in python. The interface need to take numpy array as input, then request buffer to get pointer to data and then call the matmul function in C to do mathematic process.
+
+This is implementation of interface
+
+```
+void matmul_c_interface(py::array_t<float> A, py::array_t<float> B, py::array_t<float> C,int M, int N, int K){
+  py::buffer_info A_buf = A.request(), B_buf = B.request(), C_buf = C.request();
+  float *ptr_A = static_cast<float *>(A_buf.ptr);
+  float *ptr_B = static_cast<float *>(B_buf.ptr);
+  float *ptr_C = static_cast<float *>(C_buf.ptr);
+
+  matmul_c(ptr_A,ptr_B,ptr_C,M,N,K);
+}
+
+PYBIND11_MODULE(matmul_c, m) {
+    m.doc() = "pybind11 example plugin"; // optional module docstring
+
+    m.def("matmul_c_interface", &matmul_c_interface, "A function that adds two numbers");
+}
+
+```
+
+After finishing implementation we need to build the interface
+
+```
+$ export Python_Standard_Library_PATH=$(python3 -c "import sys; print(':'.join(sys.path))")
+
+$ g++ -O3 -Wall -shared -std=c++11 -fPIC -I$Python_Standard_Library_PATH \
+                                        $(python3 -m pybind11 --includes) matmul.cpp \
+                                        -o matmul_c$(python3-config --extension-suffix)
+
+```
+
+When execute `python3 main.py` it show to terminal like this
+
+![1703331472728](images/README/1703331472728.png)
+
+Because I use ubuntu VM with only 1 core, so the python execute for very long. When using c++ interface it the execution time reduce significantly.
+
+---
+
+## Problem 4
