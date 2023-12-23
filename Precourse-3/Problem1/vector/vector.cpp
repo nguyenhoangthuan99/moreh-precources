@@ -5,25 +5,26 @@ namespace getp {
 template <typename T>
 vector<T>::vector() {
   // TODO : FILL IN HERE
-  this->data_ = new T[1];
+  this->data_ = nullptr;
   this->size = 0;
-  this->capacity = 1;
+  this->capacity = 0;
 }
 
 template <typename T> vector<T>::~vector() { 
   // TODO : FILL IN HERE
   delete [] this->data_;
+  this->data_ = nullptr;
   this->size = 0;
-  this->capacity = 1;
+  this->capacity = 0;
 }
 
 template <typename T>
 vector<T>::vector(const vector &other) {
   // TODO : FILL IN HERE
   new (this) vector();
-  this->size = other.getSize();
-  this->capacity = other.getCapacity();
-  this->data_ = new T[this->capacity];
+  // this->size = other.getSize();
+  // this->capacity = other.getCapacity();
+  // this->data_ = new T[this->capacity];
   for(auto it = other.cbegin(); it != other.cend() ; it++){
     this->push_back(*it);
   }
@@ -50,7 +51,7 @@ vector<T>::vector(vector &&other) noexcept {
 template <typename T> vector<T> &vector<T>::operator=(const vector &other) {
   // TODO : FILL IN HERE
   delete [] this->data_;
-  this->size = other.getSize();
+  this->size = 0;
   this->capacity = other.getCapacity();
   this->data_ = new T[this->capacity];
   for(auto it = other.cbegin(); it != other.cend() ; it++){
@@ -66,7 +67,7 @@ template <typename T> vector<T> &vector<T>::operator=(const vector &other) {
 template <typename T> vector<T> &vector<T>::operator=(vector &&other) noexcept {
   // TODO : FILL IN HERE
   delete [] this->data_;
-  this->size = other.getSize();
+  this->size = 0;
   this->capacity = other.getCapacity();
   this->data_ = new T[this->capacity];
   for(auto it = other.cbegin(); it != other.cend() ; it++){
@@ -120,7 +121,12 @@ template <typename T> size_t vector<T>::getCapacity() const {
 
 template <typename T> void vector<T>::push_back(const T &value) {
   // TODO : FILL IN HERE
-  if (this->size == this->capacity){
+  if (this->capacity==0){
+    this->size = this->capacity = 1;
+    this->data_ = new T[1];
+    this->data_[0] = value;
+  }
+  else if (this->size == this->capacity){
     
     T* temp = new T[2*this->capacity];
     for (size_t i = 0; i < this->capacity; i++) {
