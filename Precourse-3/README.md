@@ -392,16 +392,47 @@ return this->data_;
 ```
 
 `cbegin()`:
-
+Return constant pointer to the head of data
+```
+const T* temp = this->data_;
+return temp;
+```
 
 `end()`:
+Return pointer to the tail of vector
+```
+return this->data_ + this->size;
+```
 
 `cend()`:
+Return constant pointer to the tail of vector
+```
+const T* temp = this->data_ + this->size;
+return temp;
+```
 
 `rbegin()`:
+Return reverse iterator point to the end of data
+```
+return std::reverse_iterator<T *> (this->end());
+```
 
 `crbegin()`:
+Return constant reverse iterator point to the end of data
+```
+std::reverse_iterator<const T *> temp = std::reverse_iterator<const T *> (this->cend());
+return temp;
+```
 
 `rend()`:
+Return reverse iterator point to the head of data
+```
+return std::reverse_iterator<T *> (this->begin());
+```
 
 `crend()`:
+Return constant reverse iterator point to the head of data
+```
+std::reverse_iterator<const T *> temp = std::reverse_iterator<const T *> (this->cbegin());
+return temp;
+```
