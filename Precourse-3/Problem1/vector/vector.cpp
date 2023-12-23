@@ -22,45 +22,30 @@ template <typename T>
 vector<T>::vector(const vector &other) {
   // TODO : FILL IN HERE
   new (this) vector();
-  // this->size = other.getSize();
-  // this->capacity = other.getCapacity();
-  // this->data_ = new T[this->capacity];
   for(auto it = other.cbegin(); it != other.cend() ; it++){
     this->push_back(*it);
   }
-  // for(unsigned int i=0;i<this->size;i++){
-  //   this->data_[i] = other.at(i);
-  // }
 }
 
 template <typename T>
 vector<T>::vector(vector &&other) noexcept { 
   // TODO : FILL IN HERE
   new (this) vector();
-  this->size = other.getSize();
-  this->capacity = other.getCapacity();
-  this->data_ = new T[this->capacity];
   for(auto it = other.cbegin(); it != other.cend() ; it++){
     this->push_back(*it);
   }
-  // for(unsigned int i=0;i<this->size;i++){
-  //   this->data_[i] = other.at(i);
-  // }
+
 }
 
 template <typename T> vector<T> &vector<T>::operator=(const vector &other) {
   // TODO : FILL IN HERE
   delete [] this->data_;
   this->size = 0;
-  this->capacity = other.getCapacity();
-  this->data_ = new T[this->capacity];
+  this->capacity = 0;
+  this->data_ = nullptr;
   for(auto it = other.cbegin(); it != other.cend() ; it++){
     this->push_back(*it);
   }
-  // for(unsigned int i=0;i<this->size;i++){
-  //   this->data_[i] = other.at(i);
-  // }
-
   return *this;
 }
 
@@ -68,14 +53,11 @@ template <typename T> vector<T> &vector<T>::operator=(vector &&other) noexcept {
   // TODO : FILL IN HERE
   delete [] this->data_;
   this->size = 0;
-  this->capacity = other.getCapacity();
-  this->data_ = new T[this->capacity];
+  this->capacity = 0;
+  this->data_ = nullptr;
   for(auto it = other.cbegin(); it != other.cend() ; it++){
     this->push_back(*it);
   }
-  // for(unsigned int i=0;i<this->size;i++){
-  //   this->push_back(other[i]);
-  // }
 
   return *this;
 }
