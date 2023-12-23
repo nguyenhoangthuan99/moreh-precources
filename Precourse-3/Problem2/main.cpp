@@ -20,7 +20,7 @@ typedef struct book_{
     uint32_t volume_number; // 4 bytes
     uint32_t ISBN; // 4 bytes
 } book;
-
+//__attribute__ ((packed))
 typedef struct library_{
   book *books;
 } library;

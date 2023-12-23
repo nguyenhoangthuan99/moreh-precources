@@ -37,8 +37,9 @@ template <class T>
 typename list<T>::iterator list<T>::iterator::operator++(int) {
   // TODO : FILL IN HERE
   // current = current->next;
+  auto temp = iterator (current);
   current = current->next;
-  return iterator (current);
+  return temp;
    //
   
 }
@@ -209,7 +210,8 @@ template <class T> typename list<T>::iterator list<T>::end() {
 
 template <class T> typename list<T>::iterator list<T>::cbegin() const {
   // TODO : FILL IN HERE
-  return iterator(this->head);
+  auto temp = iterator(this->head)
+  return temp;
 }
 
 template <class T> typename list<T>::iterator list<T>::cend() const {
