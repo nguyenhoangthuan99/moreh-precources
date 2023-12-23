@@ -210,7 +210,7 @@ template <class T> typename list<T>::iterator list<T>::end() {
 
 template <class T> typename list<T>::iterator list<T>::cbegin() const {
   // TODO : FILL IN HERE
-  auto temp = iterator(this->head)
+  const auto temp = iterator(this->head)
   return temp;
 }
 
