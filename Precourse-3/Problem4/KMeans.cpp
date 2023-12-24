@@ -47,8 +47,8 @@ void KMeans::generateRandomDataPoints(int num_points) {
         vec.push_back(p);
     }
     this->data_points = vec;
-    this->epsilon = 1e-3; // minimum centroids distance change between 2 iteration to decide stop algorithm
-    this->stop = false; // decide to stop algorithm or not
+    // this->epsilon = 1e-3; // minimum centroids distance change between 2 iteration to decide stop algorithm
+    // this->stop = false; // decide to stop algorithm or not
 
 }
 
@@ -70,7 +70,7 @@ void KMeans::assignToClusters() {
     }
 }
 
-void KMeans::updateCentroids() {
+double KMeans::updateCentroids() {
     // TODO: Implement this function
     // Update the centroids of clusters based on the current assignment of data points.
     double sum = 0;
@@ -88,7 +88,8 @@ void KMeans::updateCentroids() {
         this->centroids[i] = p;
 
     }
-    this->stop = sum < this->epsilon;
+    // this->stop = sum < this->epsilon;
+    return sum;
 }
 
 double KMeans::calculateDistance(const Point& p1, const Point& p2) {
@@ -97,10 +98,11 @@ double KMeans::calculateDistance(const Point& p1, const Point& p2) {
 
 void KMeans::run(int max_iterations) {
     // TODO: Implement K-means algorithm and print the coordinates of each cluster centroid After the maximum number of iterations
+    double sum;
     for (int i=0;i< max_iterations;i++){
         this->assignToClusters();
-        this->updateCentroids();
-        std::cout<<"Iteration "<<i<<"\n";
+        sum = this->updateCentroids();
+        std::cout<<"Iteration "<<i + 1<<"\n";
         std::cout<<"Centroid points :[";
         for (auto p :this->centroids){
             std::cout<< "("<< p.x<<"," <<p.y  <<"), ";
@@ -108,7 +110,7 @@ void KMeans::run(int max_iterations) {
         std::cout<<"]\n";
 
         std::cout<<"------------------------------------\n";
-        if(this->stop){
+        if(sum <1e-3){
             std::cout<< "centroids doesn't change significantly, stop algorithm!\n";
             break;
         }

@@ -11,8 +11,6 @@ private:
     std::vector<Point> centroids;
     std::vector<int> points_cluster;
     int k;
-    double epsilon;
-    bool stop;
 
 public:
     KMeans(int num_points, int k);
@@ -22,7 +20,7 @@ private:
     void initializeCentroids();
     void generateRandomDataPoints(int num_points);
     void assignToClusters();
-    void updateCentroids();
+    double updateCentroids();
     double calculateDistance(const Point& p1, const Point& p2);
 };
 

@@ -24,6 +24,7 @@ f(foo *);
 #### Iterator
 
 `iterator(Node *node)` :
+
 This function will assign the attribute `current` to the node by
 
 ```
@@ -31,6 +32,7 @@ this->current = node;
 ``````
 
 `iterator::operator*()`:
+
 This function return the data in the current node of iterator, implement this by
 
 ```
@@ -38,6 +40,7 @@ return this->current->data;
 ```
 
 `iterator::operator++()`:
+
 This function overrides prefix increment of iterator, coressponding to `++x`, which means increase value of `x` then assign it to other variable.
 
 ```
@@ -46,6 +49,7 @@ return *this;
 ```
 
 `iterator::operator++(int)`:
+
 This function overrides postfix increment of iterator, coresponding to `x++`, which means assign value of `x` first, then increases `x`.
 
 ```
@@ -55,6 +59,7 @@ return temp;
 ```
 
 `operator!=(const iterator &other)`:
+
 This function will compare 2 iterator to decide whether it point to the same node:
 
 ```
@@ -74,17 +79,19 @@ this->size_ = 0;
 ```
 
 `list(const list &other)`:
+
 This is constructor from another list, firstly need to init empty list, then for each element of input list, use `push_back` to append value to new list.
 
 ```
 new (this) list();
 this->size_ = 0;
 for(iterator it = other.cbegin(); it != other.cend() ; ++it){
-this->push_back(*it);
+    this->push_back(*it);
 }
 ```
 
 `list(std::initializer_list<T> initList)`:
+
 This is constructor from an array or a object has datatype that can implicitly convert to type `std::initializer_list`.
 
 ```
@@ -96,6 +103,7 @@ this->size_ = 0;
 ```
 
 `~list()`:
+
 This is destructor of a list, just simply call `clear()` and set `size_ = 0`.
 
 ```
@@ -104,29 +112,31 @@ this->size_ = 0;
 ```
 
 `operator=(const list &other)`:
+
 This is implementation of operator `=`, the logic will be the same with constructor from another list, but need to return pointer to current list
 
 ```
 this->clear();
 this->size_ = 0;
 for(iterator it = other.cbegin(); it != other.cend() ; it++){
-this->push_back(*it);
+    this->push_back(*it);
 }
 return *this;
 ```
 
 `push_back(const T &value)`:
+
 Append value to the end of a list, this process requires create new Node, chain the new node to the end of list and point the `tail` to new node. Don't forget to increase the size by 1.
 
 ```
 Node* temp = new Node(value);
 if (this->size_ == 0){
-this->head = temp;
-this->tail = temp;
+    this->head = temp;
+    this->tail = temp;
 }
 else{
-temp->prev = this->tail;
-this->tail->next = temp;
+    temp->prev = this->tail;
+    this->tail->next = temp;
 
 }
 this->tail=temp;
@@ -134,6 +144,7 @@ this->size_ += 1;
 ```
 
 `push_front(const T &value)`:
+
 This is the same logic with `push_back` unless it insert to the head of list.
 
 `pop_back()`:
@@ -159,6 +170,7 @@ if (this->size_ >0){
 ```
 
 `pop_front()`:
+
 The logic will be the same with `pop_back`.
 
 `emplace_back(T &&value)`:
@@ -178,6 +190,7 @@ this->push_front(value);
 ```
 
 `size() `:
+
 This function will return the size of list
 
 ```
@@ -185,15 +198,17 @@ return this->size_
 ```
 
 `print()`:
+
 This function will print all value of a list from head to tail.
 
 ```
 for(iterator it = this->cbegin(); it != this->cend() ; it++){
-std::cout << *it << " ";
+    std::cout << *it << " ";
 }
 ```
 
 `clear()`:
+
 The logic of this function is: while the head still point to an not null pointer, do the `pop_front`.
 
 ```
@@ -204,6 +219,7 @@ this->size_ = 0;
 ```
 
 `begin()`:
+
 This function return iterator point to head of a list.
 
 ```
@@ -211,6 +227,7 @@ return iterator(this->head);
 ```
 
 `end()`:
+
 This function return iterator point to tail of a list - always a null pointer.
 
 ```
@@ -218,6 +235,7 @@ return iterator(nullptr);
 ```
 
 `cbegin()`:
+
 This function return a constant iterator point to head of a list. A constant iterator won't allow to modify the data.
 
 ```
@@ -226,6 +244,7 @@ return temp;
 ```
 
 `cend()`:
+
 This function return a constant iterator point to tail of a list. Because tail alway null pointer so it will like the end().
 
 ```
@@ -241,6 +260,7 @@ After finish implementation, the result output in terminal.
 ### vector
 
 `vector()`:
+
 This is constructor for empty vector, in this section, init `size` and `capacity` is 0 and `data_ = nullptr`.
 
 ```
@@ -250,6 +270,7 @@ this->capacity = 0;
 ```
 
 `~vector()`:
+
 This is destructor of vector, need to delete array of `data_`, set `size` and `capacity` to 0 and point `data_` to a `nullptr`.
 
 ```
@@ -260,6 +281,7 @@ this->capacity = 0;
 ```
 
 `vector(const vector &other)`:
+
 This is a constructor vector from other constant vector. Need to init empty vector first, then for each element in other vector and push_back the value.
 
 ```
@@ -270,6 +292,7 @@ for(auto it = other.cbegin(); it != other.cend() ; it++){
 ```
 
 `vector(vector &&other)`:
+
 The logic of this part is the same with constructor with another constant vector.
 
 `operator=(const vector &other)`:
@@ -287,9 +310,11 @@ return *this;
 ```
 
 `operator=(vector &&other)`:
+
 This logic is the same with above `=` operator.
 
 `at(size_t index)`:
+
 This function return data value at position `index`. Need to throw error when index is out of array.
 
 ```
@@ -300,6 +325,7 @@ return this->data_[index];
 ```
 
 `operator[](size_t index)`:
+
 Can reuse `at` function when override this operator.
 
 ```
@@ -307,6 +333,7 @@ return this->at(index);
 ```
 
 `front()`:
+
 Return the first element of vector.
 
 ```
@@ -314,6 +341,7 @@ return this->data_[0];
 ```
 
 `back()`:
+
 Return the last element of vector.
 
 ```
@@ -321,6 +349,7 @@ return this->data_[this->size -1];
 ```
 
 `data()`:
+
 Return the array of data.
 
 ```
@@ -328,6 +357,7 @@ return this->data_;
 ```
 
 `getSize()`:
+
 Return `size` of vector.
 
 `push_back(const T &value)`:
@@ -359,6 +389,7 @@ else{
 ```
 
 `emplace_back(Args &&... args)`:
+
 This function is used when an element in vector is not a common type like `int` or `float`, but a `struc` or `class` instead. To implement this, we need to `push_back` the object created by input arguments.
 
 ```
@@ -366,6 +397,7 @@ this->push_back(T(std::forward<Args>(args)...));
 ```
 
 `append_range(InputIt first, InputIt last)`:
+
 This function will append a range of input iterator.
 
 ```
@@ -375,6 +407,7 @@ for(InputIt it=first;it!=last;it++){
 ```
 
 `pop_back()`:
+
 Decrease the `size` by 1 if `size > 0`.
 
 ```
@@ -382,6 +415,7 @@ this->size = this->size > 0 ? this->size -1 : 0;
 ```
 
 `reserve(size_t newCapacity)`:
+
 Reserve a fix amount of data. If the `newCapacity` smaller than current `size`, only keep the first elements.
 
 ```
@@ -400,6 +434,7 @@ this->size = temp_size;
 ```
 
 `begin()`:
+
 Return the pointer to the head of data
 
 ```
@@ -407,6 +442,7 @@ return this->data_;
 ```
 
 `cbegin()`:
+
 Return constant pointer to the head of data
 
 ```
@@ -415,6 +451,7 @@ return temp;
 ```
 
 `end()`:
+
 Return pointer to the tail of vector
 
 ```
@@ -422,6 +459,7 @@ return this->data_ + this->size;
 ```
 
 `cend()`:
+
 Return constant pointer to the tail of vector
 
 ```
@@ -430,6 +468,7 @@ return temp;
 ```
 
 `rbegin()`:
+
 Return reverse iterator point to the end of data
 
 ```
@@ -437,6 +476,7 @@ return std::reverse_iterator<T *> (this->end());
 ```
 
 `crbegin()`:
+
 Return constant reverse iterator point to the end of data
 
 ```
@@ -445,6 +485,7 @@ return temp;
 ```
 
 `rend()`:
+
 Return reverse iterator point to the head of data
 
 ```
@@ -452,6 +493,7 @@ return std::reverse_iterator<T *> (this->begin());
 ```
 
 `crend()`:
+
 Return constant reverse iterator point to the head of data
 
 ```
@@ -505,7 +547,7 @@ The output terminal show this
 
 When call `sizeof(lib->books[0])` it return 56 instead of 54. So the size of file on disk is `56*2=112 bytes`. This is behavior of compiler to avoid alignment issue. The compiler will pad the struct to fit 8-byte boundary. So it will pad 54 bytes to 56 bytes.
 
-To solve this problem, we need to write each attribute of a struc to file instead of whole struct.
+To solve this problem, we need to write each attribute of a book to file instead of whole book object.
 
 ### Solve the problem
 
@@ -600,3 +642,146 @@ Because I use ubuntu VM with only 1 core, so the python execute for very long. W
 ---
 
 ## Problem 4
+
+To solve this problem, I add a vector `std::vector<int> points_cluster;` to save the cluster that point[i] belongs to. I also change the return type of function `void updateCentroids()` -> `double updateCentroids()`, this function will return the total distance change of centroids between 2 iterations. This is the `KMeans.h` after modification
+
+```
+class KMeans {
+private:
+    std::vector<Point> data_points;
+    std::vector<Point> centroids;
+    std::vector<int> points_cluster;
+    int k;
+
+public:
+    KMeans(int num_points, int k);
+    void run(int max_iterations);
+
+private:
+    void initializeCentroids();
+    void generateRandomDataPoints(int num_points);
+    void assignToClusters();
+    double updateCentroids();
+    double calculateDistance(const Point& p1, const Point& p2);
+};
+```
+
+### Function implementation
+
+`KMeans::generateRandomDataPoints(int num_points)`:
+Firstly, we need to set random seed fix by call `srand(42)`, then enter a for loop with number of step equal to `num_points`, each step we randomly generate point and push back to `this->data_points`.
+```
+double fRand(double fMin, double fMax)
+{
+    double f = (double)rand() / RAND_MAX;
+    return fMin + f * (fMax - fMin);
+}
+
+void KMeans::generateRandomDataPoints(int num_points) {
+    // TODO: Implement this function
+    // Generate a given number of random data points within a specified range ( 0< x, y<50)
+    srand(42);
+    double min = 0, max = 50;
+    std::vector<Point> vec;
+    for (int i = 0 ; i< num_points;i++){
+        Point p = Point(fRand(min,max),fRand(min,max));
+        vec.push_back(p);
+    }
+    this->data_points = vec;
+    // this->epsilon = 1e-3; // minimum centroids distance change between 2 iteration to decide stop algorithm
+    // this->stop = false; // decide to stop algorithm or not
+
+}
+```
+
+The `fRand` is a helper function to generate a double number from `fMin` to `fMax`.
+
+`KMeans::initializeCentroids()`:
+Because we generate data points randomly with uniform distribution, so we can chose the first `k` points in the data as initalize centroids. We also need to assign each point to a cluster at this step, I decide to assign all point to centroid 0 coressponding to cluster 0, this won't affect anything, just to make every points has its own initial cluster.
+```
+void KMeans::initializeCentroids() {
+     // TODO: Implement this function
+    // Initialize the centroids of clusters randomly.
+    srand(42);
+    std::vector<Point> vec;
+    for(int i=0;i<k;i++){
+        vec.push_back(this->data_points[i]);
+    }
+    this->centroids = vec;
+    std::size_t l = this->data_points.size();
+    for (std::size_t i =0;i<l;i++){
+        this->points_cluster.push_back(0);
+    }
+    
+}
+```
+
+
+`KMeans::assignToClusters()`:
+The logic of this function is, for each point, we will calculate the distance of it to every centroids, then we chose the closest centroid and assign this point to this centroid.
+```
+void KMeans::assignToClusters() {
+    // TODO: Implement this function
+    // Assign each point to a cluster of the nearest centroid
+    for (std::size_t i =0; i <this->data_points.size();i++){
+        double min_dis = 1e9;
+        int cluster = 0;
+        for (size_t j=0 ;j<this->centroids.size();j++){
+            double dist = this->calculateDistance(this->data_points[i],this->centroids[j]);
+             if (dist < min_dis){
+                min_dis = dist;
+                cluster = j;
+             }
+        }
+        this->points_cluster[i] = (int)cluster;
+    }
+}
+```
+
+`KMeans::updateCentroids()`:
+This function will update the centroid of each cluster, new centroid will be the center of all point belong to corresponding cluster. We also need to observe the total distance of new centroids to old one for each cluster, if the total distance doesn't change significantly, stop the algorithm
+```
+double KMeans::updateCentroids() {
+    // TODO: Implement this function
+    // Update the centroids of clusters based on the current assignment of data points.
+    double sum = 0;
+    for (int i=0;i<this->k;i++){
+        double sum_x =0, sum_y=0,total=0;
+        for (std::size_t j =0;j<this->data_points.size();j++){
+            if(points_cluster[j] == i){
+                sum_x+= this->data_points[j].x;
+                sum_y+= this->data_points[j].y;
+                total+=1;
+            }
+        }
+        Point p = Point(sum_x/total, sum_y/total);
+        sum += this->calculateDistance(p,this->centroids[i]);
+        this->centroids[i] = p;
+    }
+    return sum;
+}
+```
+
+`KMeans::run(int max_iterations)`:
+The logic of this function will do a for loop to `max_iterations`, each step call to assign each point to exact cluster, then update the new centroids. If total distance of centroids between 2 iteration is small than an epsilon, (in the algorithm, I set epsilon is 1e-3 by hard code), then stop algorithm.
+```
+void KMeans::run(int max_iterations) {
+    // TODO: Implement K-means algorithm and print the coordinates of each cluster centroid After the maximum number of iterations
+    double sum;
+    for (int i=0;i< max_iterations;i++){
+        this->assignToClusters();
+        sum = this->updateCentroids();
+        std::cout<<"Iteration "<<i + 1<<"\n";
+        std::cout<<"Centroid points :[";
+        for (auto p :this->centroids){
+            std::cout<< "("<< p.x<<"," <<p.y  <<"), ";
+        }
+        std::cout<<"]\n";
+        std::cout<<"------------------------------------\n";
+        if(sum <1e-3){
+            std::cout<< "centroids doesn't change significantly, stop algorithm!\n";
+            break;
+        }
+    }
+}
+```
