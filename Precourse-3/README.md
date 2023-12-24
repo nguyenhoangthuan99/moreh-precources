@@ -670,6 +670,7 @@ private:
 
 `KMeans::generateRandomDataPoints(int num_points)`:
 Firstly, we need to set random seed fix by call `srand(42)`, then enter a for loop with number of step equal to `num_points`, each step we randomly generate point and push back to `this->data_points`.
+
 ```
 double fRand(double fMin, double fMax)
 {
@@ -698,6 +699,7 @@ The `fRand` is a helper function to generate a double number from `fMin` to `fMa
 
 `KMeans::initializeCentroids()`:
 Because we generate data points randomly with uniform distribution, so we can chose the first `k` points in the data as initalize centroids. We also need to assign each point to a cluster at this step, I decide to assign all point to centroid 0 coressponding to cluster 0, this won't affect anything, just to make every points has its own initial cluster.
+
 ```
 void KMeans::initializeCentroids() {
      // TODO: Implement this function
@@ -712,13 +714,13 @@ void KMeans::initializeCentroids() {
     for (std::size_t i =0;i<l;i++){
         this->points_cluster.push_back(0);
     }
-    
+  
 }
 ```
 
-
 `KMeans::assignToClusters()`:
 The logic of this function is, for each point, we will calculate the distance of it to every centroids, then we chose the closest centroid and assign this point to this centroid.
+
 ```
 void KMeans::assignToClusters() {
     // TODO: Implement this function
@@ -740,6 +742,7 @@ void KMeans::assignToClusters() {
 
 `KMeans::updateCentroids()`:
 This function will update the centroid of each cluster, new centroid will be the center of all point belong to corresponding cluster. We also need to observe the total distance of new centroids to old one for each cluster, if the total distance doesn't change significantly, stop the algorithm
+
 ```
 double KMeans::updateCentroids() {
     // TODO: Implement this function
@@ -764,6 +767,7 @@ double KMeans::updateCentroids() {
 
 `KMeans::run(int max_iterations)`:
 The logic of this function will do a for loop to `max_iterations`, each step call to assign each point to exact cluster, then update the new centroids. If total distance of centroids between 2 iteration is small than an epsilon, (in the algorithm, I set epsilon is 1e-3 by hard code), then stop algorithm.
+
 ```
 void KMeans::run(int max_iterations) {
     // TODO: Implement K-means algorithm and print the coordinates of each cluster centroid After the maximum number of iterations
@@ -785,3 +789,7 @@ void KMeans::run(int max_iterations) {
     }
 }
 ```
+
+The output result of terminal show like this
+
+![1703415222250](images/README/1703415222250.png)
