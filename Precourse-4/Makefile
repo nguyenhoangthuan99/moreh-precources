@@ -4,8 +4,8 @@ CFLAGS=-std=c++14 -O3 -Wall -march=native -I/usr/local/include -g
 LDFLAGS=-L/usr/local/lib
 LDLIBS=-lstdc++
 
-TARGET=main
-OBJECTS=main.o
+TARGET=memory_mountain
+OBJECTS=memory_mountain.o
 
 all: $(TARGET)
 

@@ -4,6 +4,11 @@
 #include <sys/times.h>
 #include <string.h>
 #include <chrono>
+#include <cstdio>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <array>
 
 #define MAXRUNS 100 // number of runs for-loop access memory
 
@@ -19,6 +24,30 @@ long data[MAXLEN];
 #define STRIDE_CLEAR_CACHE 8       // cache block size is 32 bytes = 8*4bytes (int)
 static int array_to_clear_cache[CLEAR_CACHE_SIZE];
 static int var;
+
+std::string exec(const char* cmd) {
+    std::array<char, 512> buffer;
+    std::string result;
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+    if (!pipe) {
+        throw std::runtime_error("popen() failed!");
+    }
+    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+        result += buffer.data();
+    }
+    return result;
+}
+
+void printf_cache_info(){
+    std::string result_L1d = exec("lscpu | grep \"L1d cache:\"");
+    std::string result_L2 = exec("lscpu | grep \"L2 cache:\"");
+    std::string result_L3 = exec("lscpu | grep \"L3 cache:\"");
+    std::cout<<std::endl;
+    std::cout<<result_L1d<<std::endl;
+    std::cout<<result_L2<<std::endl;
+    std::cout<<result_L3<<std::endl;
+
+}
 
 static void clear_cache()
 {
@@ -120,6 +149,8 @@ int main()
 
     core_mhz = read_clock_cpuinfo();
     printf("Clock frequency read from cpuinfo is: %.1f MHz\n",core_mhz);
+    printf_cache_info();
+    printf("\n");
     // Test bandwidth
     printf("Throughput/Bandwidth with different buffer size and stride (MB/sec)\n");
 
