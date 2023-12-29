@@ -1,4 +1,4 @@
-CXX=mpic++
+CXX=gcc
 
 CFLAGS=-std=c++14 -O3 -Wall -march=native -I/usr/local/include -g
 LDFLAGS=-L/usr/local/lib
