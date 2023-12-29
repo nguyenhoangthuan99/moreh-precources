@@ -9,12 +9,13 @@
 #include <memory>
 #include <stdexcept>
 #include <array>
+#include <thread>
 
 #define MAXRUNS 100 // number of runs for-loop access memory
 
 #define MINBYTES (1 << 11) /* First working set size */ // 2kB
 #define MAXBYTES (1 << 27) /* Last working set size */  // 128 Mb
-#define MAXSTRIDE 20                                   /* Stride x8 bytes */
+#define MAXSTRIDE 20                                    /* Stride x8 bytes */
 #define MAXLEN MAXBYTES / sizeof(long)
 
 long data[MAXLEN];
@@ -25,28 +26,31 @@ long data[MAXLEN];
 static int array_to_clear_cache[CLEAR_CACHE_SIZE];
 static int var;
 
-std::string exec(const char* cmd) {
+std::string exec(const char *cmd)
+{
     std::array<char, 512> buffer;
     std::string result;
     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
-    if (!pipe) {
+    if (!pipe)
+    {
         throw std::runtime_error("popen() failed!");
     }
-    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr)
+    {
         result += buffer.data();
     }
     return result;
 }
 
-void printf_cache_info(){
+void printf_cache_info()
+{
     std::string result_L1d = exec("lscpu | grep \"L1d cache:\"");
     std::string result_L2 = exec("lscpu | grep \"L2 cache:\"");
     std::string result_L3 = exec("lscpu | grep \"L3 cache:\"");
-    std::cout<<std::endl;
-    std::cout<<result_L1d<<std::endl;
-    std::cout<<result_L2<<std::endl;
-    std::cout<<result_L3<<std::endl;
-
+    std::cout << std::endl;
+    std::cout << result_L1d << std::endl;
+    std::cout << result_L2 << std::endl;
+    std::cout << result_L3 << std::endl;
 }
 
 static void clear_cache()
@@ -134,9 +138,17 @@ long double run_latency_ns(int size, int stride)
     test_access_memory(num_elements, stride, MAXRUNS);
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-    
-    long double result = ((long double)microseconds)*1000.0 / (MAXRUNS*num_elements/stride);
+
+    long double result = ((long double)microseconds) * 1000.0 / (MAXRUNS * num_elements / stride);
     return result;
+}
+
+void multi_thread_dram_benchmark(){
+
+}
+
+void disk_benchmark(){
+
 }
 
 int main()
@@ -145,62 +157,68 @@ int main()
     double core_mhz;
     clear_cache();
     init_data(data, MAXLEN);
-    test_access_memory(MAXLEN,1,5); //warm up cache
+    test_access_memory(MAXLEN, 1, 5); // warm up cache
 
     core_mhz = read_clock_cpuinfo();
-    printf("Clock frequency read from cpuinfo is: %.1f MHz\n",core_mhz);
+    printf("Clock frequency read from cpuinfo is: %.1f MHz\n", core_mhz);
     printf_cache_info();
     printf("\n");
     // Test bandwidth
     printf("Throughput/Bandwidth with different buffer size and stride (MB/sec)\n");
 
     printf("\t");
-    for (stride = 1; stride<= MAXSTRIDE; stride ++){
-        printf("s%d\t",stride);
+    for (stride = 1; stride <= MAXSTRIDE; stride++)
+    {
+        printf("s%d\t", stride);
     }
     printf("\n");
 
-    for (size = MAXBYTES; size >= MINBYTES; size >>=1){
-        if (size >=(1<<20)){ //Mb
-            printf("%dm\t",size/(1<<20));
+    for (size = MAXBYTES; size >= MINBYTES; size >>= 1)
+    {
+        if (size >= (1 << 20))
+        { // Mb
+            printf("%dm\t", size / (1 << 20));
         }
-        else{
-            printf("%dk\t",size/1024);
+        else
+        {
+            printf("%dk\t", size / 1024);
         }
-        for (stride = 1; stride<=MAXSTRIDE; stride++){
-            printf("%.0Lf\t",run_bandwidth(size,stride));
+        for (stride = 1; stride <= MAXSTRIDE; stride++)
+        {
+            printf("%.0Lf\t", run_bandwidth(size, stride));
         }
         printf("\n");
-        
     }
 
     sleep(3);
     printf("\n---------------------------------------------------------\n");
 
-
     // Test latency
     printf("Latency with different buffer size and stride (nano seconds)\n");
 
     printf("\t");
-    for (stride = 1; stride<= MAXSTRIDE; stride ++){
-        printf("s%d\t",stride);
+    for (stride = 1; stride <= MAXSTRIDE; stride++)
+    {
+        printf("s%d\t", stride);
     }
     printf("\n");
 
-    for (size = MAXBYTES; size >= MINBYTES; size >>=1){
-        if (size >=(1<<20)){ //Mb
-            printf("%dm\t",size/(1<<20));
+    for (size = MAXBYTES; size >= MINBYTES; size >>= 1)
+    {
+        if (size >= (1 << 20))
+        { // Mb
+            printf("%dm\t", size / (1 << 20));
         }
-        else{
-            printf("%dk\t",size/1024);
+        else
+        {
+            printf("%dk\t", size / 1024);
         }
-        for (stride = 1; stride<=MAXSTRIDE; stride++){
-            printf("%.4Lf\t",run_latency_ns(size,stride));
+        for (stride = 1; stride <= MAXSTRIDE; stride++)
+        {
+            printf("%.4Lf\t", run_latency_ns(size, stride));
         }
         printf("\n");
-        
     }
 
     return 0;
 }
-
