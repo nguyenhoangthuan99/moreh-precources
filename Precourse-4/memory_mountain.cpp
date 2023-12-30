@@ -52,15 +52,24 @@ std::string exec(const char *cmd)
     return result;
 }
 
-void printf_cache_info()
+void printf_system_info()
 {
+    std::string result_cpuMHz = exec("cat /proc/cpuinfo | grep \"cpu MHz\" | head -n1");
     std::string result_L1d = exec("lscpu | grep \"L1d cache:\"");
     std::string result_L2 = exec("lscpu | grep \"L2 cache:\"");
     std::string result_L3 = exec("lscpu | grep \"L3 cache:\"");
+    std::string result_mem = exec("cat /proc/meminfo | grep MemTotal");
+    std::string result_disk = exec("df -h .");
+    std::string result_num_cpu = exec("lscpu | grep \"CPU(s):\"");
     std::cout << std::endl;
-    std::cout << result_L1d << std::endl;
-    std::cout << result_L2 << std::endl;
-    std::cout << result_L3 << std::endl;
+    std::cout<<result_num_cpu;
+    std::cout << result_cpuMHz<<std::endl;
+    std::cout << result_L1d;
+    std::cout << result_L2;
+    std::cout << result_L3;
+    std::cout << result_mem;
+    std::cout << "Disk usage info:" << std::endl;
+    std::cout << result_disk << std::endl;
 }
 
 static void clear_cache()
@@ -73,38 +82,7 @@ static void clear_cache()
     var = x;
 }
 
-double read_clock_cpuinfo()
-{
-    double core_mhz;
-    static char buf[512];
-    FILE *fp = fopen("/proc/cpuinfo", "r");
-    core_mhz = 0.0;
 
-    if (!fp)
-    {
-        fprintf(stderr, "Open /proc/cpuinfo error\n");
-        core_mhz = 1.0;
-        return core_mhz;
-    }
-    while (fgets(buf, 512, fp))
-    {
-        if (strstr(buf, "cpu MHz"))
-        {
-            double cpu_mhz = 0.0;
-            sscanf(buf, "cpu MHz\t: %lf", &cpu_mhz);
-            core_mhz = cpu_mhz;
-            break;
-        }
-    }
-    fclose(fp);
-    if (core_mhz == 0.0)
-    {
-        fprintf(stderr, "Open /proc/cpuinfo error\n");
-        core_mhz = 1000.0;
-        return core_mhz;
-    }
-    return core_mhz;
-}
 void init_data(long *data, int n)
 {
     for (int i = 0; i < n; i++)
@@ -121,7 +99,7 @@ void test_access_memory(int num_elements, int stride, int runs)
     {
         result = 0;
         // #pragma GCC push_options
-        
+
         for (int i = 0; i < num_elements; i += stride)
         {
             result += data[i];
@@ -182,7 +160,7 @@ std::streamsize sizeoffile(const char *filename)
 
 long double run_bandwidth(int size, int stride)
 {
-    long num_elements = (long) size / sizeof(long);
+    long num_elements = (long)size / sizeof(long);
     auto start = std::chrono::high_resolution_clock::now();
     test_access_memory(num_elements, stride, MAXRUNS * 10);
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
@@ -251,13 +229,13 @@ long double run_multithread_latency(int size, int stride)
 
 long double run_latency_ns(int size, int stride)
 {
-    long num_elements = (long) size / sizeof(long);
+    long num_elements = (long)size / sizeof(long);
     auto start = std::chrono::high_resolution_clock::now();
     test_access_memory(num_elements, stride, MAXRUNS * 10);
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
 
-    long double result = ((long double)microseconds * 1000) / (MAXRUNS * num_elements * 10 /(long) stride);
+    long double result = ((long double)microseconds * 1000) / (MAXRUNS * num_elements * 10 / (long)stride);
     return result;
 }
 
@@ -417,14 +395,14 @@ void cache_benchmark()
 int main()
 {
 
-    double core_mhz;
+    // double core_mhz;
     clear_cache();
     init_data(data, DRAM_MAXLEN);
     test_access_memory(DRAM_MAXLEN, 1, 5); // warm up cache
 
-    core_mhz = read_clock_cpuinfo();
-    printf("Clock frequency read from cpuinfo is: %.1f MHz\n", core_mhz);
-    printf_cache_info();
+    // core_mhz = read_clock_cpuinfo();
+    // printf("Clock frequency read from cpuinfo is: %.1f MHz\n", core_mhz);
+    printf_system_info();
     printf("\n");
     // Test bandwidth
     cache_benchmark();
