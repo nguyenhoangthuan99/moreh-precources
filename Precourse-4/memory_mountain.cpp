@@ -13,6 +13,7 @@
 #include <mutex>
 #include <fstream>
 #include <vector>
+#include <cmath>
 
 std::mutex myMutex;
 #define MAXRUNS 100 // number of runs for-loop access memory
@@ -62,8 +63,8 @@ void printf_system_info()
     std::string result_disk = exec("df -h .");
     std::string result_num_cpu = exec("lscpu | grep \"CPU(s):\"");
     std::cout << std::endl;
-    std::cout<<result_num_cpu;
-    std::cout << result_cpuMHz<<std::endl;
+    std::cout << result_num_cpu;
+    std::cout << result_cpuMHz << std::endl;
     std::cout << result_L1d;
     std::cout << result_L2;
     std::cout << result_L3;
@@ -82,7 +83,6 @@ static void clear_cache()
     var = x;
 }
 
-
 void init_data(long *data, int n)
 {
     for (int i = 0; i < n; i++)
@@ -98,13 +98,10 @@ void test_access_memory(int num_elements, int stride, int runs)
     for (int j = 0; j < runs; j++)
     {
         result = 0;
-        // #pragma GCC push_options
-
         for (int i = 0; i < num_elements; i += stride)
         {
             result += data[i];
         }
-        // #pragma GCC pop_options
         volatile long temp; // volatile tell compiler not to optimize the loop
         temp = result;
     }
@@ -162,11 +159,11 @@ long double run_bandwidth(int size, int stride)
 {
     long num_elements = (long)size / sizeof(long);
     auto start = std::chrono::high_resolution_clock::now();
-    test_access_memory(num_elements, stride, MAXRUNS * 10);
+    test_access_memory(num_elements, stride, MAXRUNS * 1<<(log2(MAXBYTES) - log2(size)));
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
     long double result = (long double)(size / stride);
-    result *= MAXRUNS * 10;
+    result *= MAXRUNS * 1<<(log2(MAXBYTES) - log2(size));
     result /= ((long double)microseconds);
     return result;
 }
@@ -193,10 +190,10 @@ long double run_read_file_bandwidth(const char *filename)
     // std::cout << "filesize " << size << std::endl;
     test_read_file(filename, 5); // warm up
     auto start = std::chrono::high_resolution_clock::now();
-    test_read_file(filename, MAXRUNS);
+    test_read_file(filename, MAXRUNS*1<<(log2(MAXBYTES) - log2(size)));
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-    long double result = (long double)size * MAXRUNS / (long double)microseconds;
+    long double result = (long double)size * MAXRUNS* 1<<(log2(MAXBYTES) - log2(size)) / (long double)microseconds;
     return result;
 }
 long double run_read_file_latency(const char *filename)
@@ -205,11 +202,11 @@ long double run_read_file_latency(const char *filename)
     // std::cout << "filesize " << size << std::endl;
     test_read_file(filename, 5); // warm up
     auto start = std::chrono::high_resolution_clock::now();
-    test_read_file(filename, MAXRUNS);
+    test_read_file(filename, MAXRUNS* 1<<(log2(MAXBYTES) - log2(size)));
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
     // std::cout<<microseconds<<std::endl;
-    long double result = (long double)microseconds / (MAXRUNS * 1000);
+    long double result = (long double)microseconds / (MAXRUNS* 1<<(log2(MAXBYTES) - log2(size)) * 1000);
     return result;
 }
 long double run_multithread_latency(int size, int stride)
@@ -231,11 +228,11 @@ long double run_latency_ns(int size, int stride)
 {
     long num_elements = (long)size / sizeof(long);
     auto start = std::chrono::high_resolution_clock::now();
-    test_access_memory(num_elements, stride, MAXRUNS * 10);
+    test_access_memory(num_elements, stride, MAXRUNS * 1<<(log2(MAXBYTES) - log2(size)));
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
 
-    long double result = ((long double)microseconds * 1000) / (MAXRUNS * num_elements * 10 / (long)stride);
+    long double result = ((long double)microseconds * 1000) / (MAXRUNS * num_elements * * 1<<(log2(MAXBYTES) - log2(size)) / (long)stride);
     return result;
 }
 
