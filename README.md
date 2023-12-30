@@ -28,7 +28,7 @@ The algorithm to access buffer with `stride` is described as follow:
 
 I define a `volatitle` variable and assign result for it, this trick can tell the compiler not to optimize the loop. The function to measure the bandwidth is described as follow:
 
-![1703917455609](images/README/1703917455609.png)
+![1703940292989](images/README/1703940292989.png)
 
 We have the equation to calculate the bandwidth:
 
@@ -41,11 +41,11 @@ total bytes read = (size of buffer) * (number of runs) / stride
 
 The logic for benchmark the latency is a bit different:
 
-![1703918339401](images/README/1703918339401.png)
+![1703940153198](images/README/1703940153198.png)
 
-We calculate the latency (nano second) by divide total execution time with total number of element accessed. `MAXRUNS` is set to 100 so `MAXRUNS * 10` mean we will run 1000 times then get the average number. The output terminal for benchmark cache is showed as follow:
+We calculate the latency (nano second) by divide total execution time with total number of element accessed. `MAXRUNS` is set to 100 so number of run is set to `MAXRUNS *  (1 << (int)(log2(MAXBYTES) - log2(size) +1))` means the smaller buffer size, the more run steps, and the run step will increase exponentially. The output terminal for benchmark cache is showed as follow:
 
-![1703918743444](images/README/1703918743444.png)
+![1703940359558](images/README/1703940359558.png)
 
 ## Benchmark the DRAM
 
