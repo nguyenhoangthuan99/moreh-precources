@@ -159,11 +159,11 @@ long double run_bandwidth(int size, int stride)
 {
     long num_elements = (long)size / sizeof(long);
     auto start = std::chrono::high_resolution_clock::now();
-    test_access_memory(num_elements, stride, MAXRUNS * 1<<(int)(log2(MAXBYTES) - log2(size)));
+    test_access_memory(num_elements, stride, MAXRUNS * (1 << (int)(log2(MAXBYTES) - log2(size))));
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
     long double result = (long double)(size / stride);
-    result *= MAXRUNS * 1<<(int)(log2(MAXBYTES) - log2(size));
+    result *= MAXRUNS * (1 << (int)(log2(MAXBYTES) - log2(size)));
     result /= ((long double)microseconds);
     return result;
 }
@@ -190,23 +190,23 @@ long double run_read_file_bandwidth(const char *filename)
     // std::cout << "filesize " << size << std::endl;
     test_read_file(filename, 5); // warm up
     auto start = std::chrono::high_resolution_clock::now();
-    test_read_file(filename, MAXRUNS*1<<(int)(log2(MAXBYTES) - log2(size)));
+    test_read_file(filename, MAXRUNS * (1 << (int)(log2(MAXBYTES) - log2(size))));
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-    long double result = (long double)size * MAXRUNS* 1<<(int)(log2(MAXBYTES) - log2(size)) / (long double)microseconds;
+    long double result = (long double)size * MAXRUNS * (1 << (int)(log2(MAXBYTES) - log2(size))) / (long double)microseconds;
     return result;
 }
 long double run_read_file_latency(const char *filename)
 {
-    // long long size = (long)sizeoffile(filename);
+    long long size = (long)sizeoffile(filename);
     // std::cout << "filesize " << size << std::endl;
     test_read_file(filename, 5); // warm up
     auto start = std::chrono::high_resolution_clock::now();
-    test_read_file(filename, MAXRUNS* 1<<(int)(log2(MAXBYTES) - log2(size)));
+    test_read_file(filename, MAXRUNS * (1 << (int)(log2(MAXBYTES) - log2(size))));
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
     // std::cout<<microseconds<<std::endl;
-    long double result = (long double)microseconds / (MAXRUNS* 1<<(int)(log2(MAXBYTES) - log2(size)) * 1000);
+    long double result = (long double)microseconds / (MAXRUNS * (1 << (int)(log2(MAXBYTES) - log2(size))) * 1000);
     return result;
 }
 long double run_multithread_latency(int size, int stride)
@@ -228,11 +228,11 @@ long double run_latency_ns(int size, int stride)
 {
     long num_elements = (long)size / sizeof(long);
     auto start = std::chrono::high_resolution_clock::now();
-    test_access_memory(num_elements, stride, MAXRUNS * 1<<(int)(log2(MAXBYTES) - log2(size)));
+    test_access_memory(num_elements, stride, MAXRUNS * 1 << (int)(log2(MAXBYTES) - log2(size)));
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
 
-    long double result = ((long double)microseconds * 1000) / (MAXRUNS * num_elements * 1<<(int)(log2(MAXBYTES) - log2(size)) / (long)stride);
+    long double result = ((long double)microseconds * 1000) / (MAXRUNS * num_elements * 1 << (int)(log2(MAXBYTES) - log2(size)) / (long)stride);
     return result;
 }
 
