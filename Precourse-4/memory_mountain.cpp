@@ -202,11 +202,11 @@ long double run_read_file_latency(const char *filename)
     // std::cout << "filesize " << size << std::endl;
     test_read_file(filename, 5); // warm up
     auto start = std::chrono::high_resolution_clock::now();
-    test_read_file(filename, MAXRUNS * (1 << (int)(log2(MAXBYTES) - log2(size) +1)));
+    test_read_file(filename, MAXRUNS * (1 << (int)(log2(MAXBYTES) - log2(size) )));
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
     // std::cout<<microseconds<<std::endl;
-    long double result = (long double)microseconds / (MAXRUNS * (1 << (int)(log2(MAXBYTES) - log2(size) +1)) * 1000);
+    long double result = (long double)microseconds / (MAXRUNS * (1 << (int)(log2(MAXBYTES) - log2(size) )) * 1000);
     return result;
 }
 long double run_multithread_latency(int size, int stride)
