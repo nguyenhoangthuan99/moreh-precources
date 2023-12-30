@@ -10,7 +10,7 @@ OBJECTS=memory_mountain.o
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(LDLIBS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(LDLIBS) -lm
 
 %.o: %.cpp
 	$(CXX) $(CFLAGS) -c -o $@ $^
