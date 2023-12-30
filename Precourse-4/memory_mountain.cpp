@@ -19,12 +19,12 @@ std::mutex myMutex;
 
 #define MINBYTES (1 << 11) /* First working set size */ // 2kB
 #define MAXBYTES (1 << 25) /* Last working set size */  // 32 Mb
-#define MAXSTRIDE 20                                    /* Stride x8 bytes */
+#define MAXSTRIDE 32                                    /* Stride x8 bytes */
 #define MAXLEN MAXBYTES / sizeof(long)
 
 #define DRAM_MINBYTES (1 << 26) /* First working set size */ // 64 Mb
 #define DRAM_MAXBYTES (1 << 29) /* Last working set size */  // 512 Mb
-#define DRAM_MAXSTRIDE 20                                    /* Stride x8 bytes */
+#define DRAM_MAXSTRIDE 32                                    /* Stride x8 bytes */
 #define DRAM_MAXLEN DRAM_MAXBYTES / sizeof(long)
 #define FILENAME "file/8192k.txt"
 
@@ -112,45 +112,48 @@ void init_data(long *data, int n)
         data[i] = i;
     }
 }
-#pragma GCC push_options
-#pragma GCC optimize ("O0")
+// #pragma GCC push_options
+// #pragma GCC optimize("O0")
 void test_access_memory(int num_elements, int stride, int runs)
 {
     long result;
     for (int j = 0; j < runs; j++)
     {
         result = 0;
+        // #pragma GCC push_options
+        
         for (int i = 0; i < num_elements; i += stride)
         {
             result += data[i];
         }
+        // #pragma GCC pop_options
         volatile long temp; // volatile tell compiler not to optimize the loop
         temp = result;
     }
 }
-#pragma GCC pop_options
+// #pragma GCC pop_options
 
-#pragma GCC push_options
-#pragma GCC optimize ("O0")
-void test_access_memory_dram(int num_elements, int stride, int runs)
-{
-    long result;
+// #pragma GCC push_options
+// #pragma GCC optimize("O0")
+// void test_access_memory_dram(int num_elements, int stride, int runs)
+// {
+//     long result;
 
-    for (int j = 0; j < runs; j++)
-    {
-        result = 0;
-        for (int i = 0; i < num_elements; i += stride)
-        {
-            result += data[i];
-        }
-        volatile long temp; // volatile tell compiler not to optimize the loop
-        temp = result;
-    }
-}
-#pragma GCC pop_options
+//     for (int j = 0; j < runs; j++)
+//     {
+//         result = 0;
+//         for (int i = 0; i < num_elements; i += stride)
+//         {
+//             result += data[i];
+//         }
+//         volatile long temp; // volatile tell compiler not to optimize the loop
+//         temp = result;
+//     }
+// }
+// #pragma GCC pop_options
 
-#pragma GCC push_options
-#pragma GCC optimize ("O0")
+// #pragma GCC push_options
+// #pragma GCC optimize("O0")
 void test_read_file(const char *filename, int runs)
 {
 
@@ -170,7 +173,7 @@ void test_read_file(const char *filename, int runs)
         }
     }
 }
-#pragma GCC pop_options
+// #pragma GCC pop_options
 std::streamsize sizeoffile(const char *filename)
 {
     std::ifstream in(filename, std::ifstream::ate | std::ifstream::binary);
@@ -179,23 +182,23 @@ std::streamsize sizeoffile(const char *filename)
 
 long double run_bandwidth(int size, int stride)
 {
-    int num_elements = size / sizeof(long);
+    long num_elements = (long) size / sizeof(long);
     auto start = std::chrono::high_resolution_clock::now();
-    test_access_memory(num_elements, stride, MAXRUNS);
+    test_access_memory(num_elements, stride, MAXRUNS * 10);
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
     long double result = (long double)(size / stride);
-    result *= MAXRUNS;
+    result *= MAXRUNS * 10;
     result /= ((long double)microseconds);
     return result;
 }
 
 long double run_multithread_bandwidth(int size, int stride)
 {
-    int num_elements = size / sizeof(long);
+    long num_elements = (long)size / sizeof(long);
     auto start = std::chrono::high_resolution_clock::now();
-    std::thread th1(test_access_memory_dram, num_elements, stride, (int)MAXRUNS / 2);
-    std::thread th2(test_access_memory_dram, num_elements, stride, (int)MAXRUNS / 2);
+    std::thread th1(test_access_memory, num_elements, stride, (int)MAXRUNS / 2);
+    std::thread th2(test_access_memory, num_elements, stride, (int)MAXRUNS / 2);
     th1.join();
     th2.join();
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
@@ -212,10 +215,10 @@ long double run_read_file_bandwidth(const char *filename)
     // std::cout << "filesize " << size << std::endl;
     test_read_file(filename, 5); // warm up
     auto start = std::chrono::high_resolution_clock::now();
-    test_read_file(filename, MAXRUNS * 10);
+    test_read_file(filename, MAXRUNS);
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-    long double result = (long double)size * MAXRUNS * 10 / (long double)microseconds;
+    long double result = (long double)size * MAXRUNS / (long double)microseconds;
     return result;
 }
 long double run_read_file_latency(const char *filename)
@@ -224,35 +227,37 @@ long double run_read_file_latency(const char *filename)
     // std::cout << "filesize " << size << std::endl;
     test_read_file(filename, 5); // warm up
     auto start = std::chrono::high_resolution_clock::now();
-    test_read_file(filename, MAXRUNS * 10);
+    test_read_file(filename, MAXRUNS);
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-    long double result = (long double)microseconds / (MAXRUNS * 10 *1000);
+    // std::cout<<microseconds<<std::endl;
+    long double result = (long double)microseconds / (MAXRUNS * 1000);
     return result;
 }
 long double run_multithread_latency(int size, int stride)
 {
-    int num_elements = size / sizeof(long);
+    long num_elements = (long)size / sizeof(long);
     auto start = std::chrono::high_resolution_clock::now();
-    std::thread th1(test_access_memory_dram, num_elements, stride, (int)MAXRUNS / 2);
-    std::thread th2(test_access_memory_dram, num_elements, stride, (int)MAXRUNS / 2);
+    std::thread th1(test_access_memory, num_elements, stride, (long)MAXRUNS / 2);
+    std::thread th2(test_access_memory, num_elements, stride, (long)MAXRUNS / 2);
     th1.join();
     th2.join();
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-    long double result = ((long double)microseconds) * 1000.0 / (MAXRUNS * num_elements / stride);
+    // std::cout<<microseconds<< " " <<(long double) microseconds<<std::endl;
+    long double result = (((long double)microseconds) / (MAXRUNS * num_elements / (long)stride)) * 1000.;
     return result;
 }
 
 long double run_latency_ns(int size, int stride)
 {
-    int num_elements = size / sizeof(long);
+    long num_elements = (long) size / sizeof(long);
     auto start = std::chrono::high_resolution_clock::now();
-    test_access_memory(num_elements, stride, MAXRUNS);
+    test_access_memory(num_elements, stride, MAXRUNS * 10);
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
 
-    long double result = ((long double)microseconds * 1000) / (MAXRUNS * num_elements / stride);
+    long double result = ((long double)microseconds * 1000) / (MAXRUNS * num_elements * 10 /(long) stride);
     return result;
 }
 
@@ -263,7 +268,7 @@ void multi_thread_dram_benchmark()
     printf("Throughput/Bandwidth of DRAM with different buffer size and stride (MB/sec)\n");
 
     printf("\t");
-    for (stride = 0; stride <= DRAM_MAXSTRIDE; stride++)
+    for (stride = 1; stride <= DRAM_MAXSTRIDE; stride += 2)
     {
         printf("s%d\t", stride);
     }
@@ -278,7 +283,7 @@ void multi_thread_dram_benchmark()
         {
             printf("%dk\t", size / 1024);
         }
-        for (stride = 0; stride <= DRAM_MAXSTRIDE; stride++)
+        for (stride = 1; stride <= DRAM_MAXSTRIDE; stride += 2)
         {
             printf("%.0Lf\t", run_multithread_bandwidth(size, stride));
         }
@@ -290,7 +295,7 @@ void multi_thread_dram_benchmark()
     printf("Latency of DRAM with different buffer size and stride (nano seconds)\n");
 
     printf("\t");
-    for (stride = 1; stride <= DRAM_MAXSTRIDE; stride++)
+    for (stride = 1; stride <= DRAM_MAXSTRIDE; stride += 2)
     {
         printf("s%d\t", stride);
     }
@@ -305,9 +310,9 @@ void multi_thread_dram_benchmark()
         {
             printf("%dk\t", size / 1024);
         }
-        for (stride = 1; stride <= DRAM_MAXSTRIDE; stride++)
+        for (stride = 1; stride <= DRAM_MAXSTRIDE; stride += 2)
         {
-            printf("%.0Lf\t", run_multithread_latency(size, stride));
+            printf("%.3Lf\t", run_multithread_latency(size, stride));
         }
         printf("\n");
     }
@@ -355,7 +360,7 @@ void cache_benchmark()
     printf("Throughput/Bandwidth with different buffer size and stride (MB/sec)\n");
 
     printf("\t");
-    for (stride = 1; stride <= MAXSTRIDE; stride++)
+    for (stride = 1; stride <= MAXSTRIDE; stride += 2)
     {
         printf("s%d\t", stride);
     }
@@ -371,7 +376,7 @@ void cache_benchmark()
         {
             printf("%dk\t", size / 1024);
         }
-        for (stride = 1; stride <= MAXSTRIDE; stride++)
+        for (stride = 1; stride <= MAXSTRIDE; stride += 2)
         {
             printf("%.0Lf\t", run_bandwidth(size, stride));
         }
@@ -385,7 +390,7 @@ void cache_benchmark()
     printf("Latency with different buffer size and stride (nano seconds)\n");
 
     printf("\t");
-    for (stride = 1; stride <= MAXSTRIDE; stride++)
+    for (stride = 1; stride <= MAXSTRIDE; stride += 2)
     {
         printf("s%d\t", stride);
     }
@@ -401,7 +406,7 @@ void cache_benchmark()
         {
             printf("%dk\t", size / 1024);
         }
-        for (stride = 1; stride <= MAXSTRIDE; stride++)
+        for (stride = 1; stride <= MAXSTRIDE; stride += 2)
         {
             printf("%.4Lf\t", run_latency_ns(size, stride));
         }
@@ -422,8 +427,8 @@ int main()
     printf_cache_info();
     printf("\n");
     // Test bandwidth
-    // cache_benchmark();
-    // multi_thread_dram_benchmark();
+    cache_benchmark();
+    multi_thread_dram_benchmark();
     disk_benchmark();
 
     return 0;
