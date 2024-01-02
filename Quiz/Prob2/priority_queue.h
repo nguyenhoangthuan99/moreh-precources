@@ -13,10 +13,10 @@ namespace getp
   {
   private:
     // IMPLEMENT HERE
-    std::deque<T> data;
+    std::vector<T> data;
     bool isLeaf(int);
     void swap(int, int);
-    void maxHeapify(int);
+    void maxHeapify(std::size_t);
 
   public:
     priority_queue();
@@ -24,6 +24,7 @@ namespace getp
     void push(const T &value);
     const T &top() const;
     void pop();
+    void print();
   };
 
   template <class T>
@@ -46,11 +47,15 @@ namespace getp
     // IMPLEMENT HERE
     this->data.push_back(value);
     std::size_t size_ = this->data.size();
-    std::size_t current = size_;
+    if (size_ ==1 ){
+      return;
+    }
+    std::size_t current = size_-1;
+    
     while (this->data[current] > this->data[(current-1)/2] && current>0)
     {
       this->swap((int)current, (int) (current-1)/2);
-      current = (current-1)/2
+      current = (current-1)/2;
     }
     
   }
@@ -59,15 +64,18 @@ namespace getp
   const T &priority_queue<T>::top() const
   {
     // IMPLEMENT HERE
-    T element = this->data.front();
-    return element;
+    return this->data.front();
   }
 
   template <class T>
   void priority_queue<T>::pop()
   {
     // IMPLEMENT HERE
-    this->data.pop_front();
+    // this->data.pop_front();
+    
+    this->swap(0,this->data.size()-1);
+    // this->data.erase(this->data.end());
+    this->data.pop_back();
     this->maxHeapify(0);
   }
 
@@ -90,22 +98,46 @@ namespace getp
   }
 
   template <class T>
-  void priority_queue<T>::maxHeapify(int pos)
+  void priority_queue<T>::maxHeapify(std::size_t pos)
   {
     // IMPLEMENT HERE
-    if (!this->isLeaf(pos))
-    {
-      if (this->data[pos] < this->data[2 * pos] || this->data[pos] < this->data[2 * pos + 1])
-      {
-        if (this->data[2 * pos] > this->data[2 * pos+1]){
-          this->swap(pos,2*pos);
-          this->maxHeapify(2*pos);
-        }
-        else{
-          this->swap(pos,2*pos+1);
-          this->maxHeapify(2*pos+1);
-        }
-      }
+    // if (!this->isLeaf(pos))
+    // {
+    //   if (this->data[pos] < this->data[2 * pos] || this->data[pos] < this->data[2 * pos + 1])
+    //   {
+    //     if (this->data[2 * pos] > this->data[2 * pos+1]){
+    //       this->swap(pos,2*pos);
+    //       this->maxHeapify(2*pos);
+    //     }
+    //     else{
+    //       this->swap(pos,2*pos+1);
+    //       this->maxHeapify(2*pos+1);
+    //     }
+    //   }
+    // }
+    std::size_t temp = pos, left = 2*pos +1, right = 2*pos+2 , n = this->data.size();
+    if (n==0){
+      return;
     }
+    if (left<n && this->data[left]>this->data[temp]){
+      temp = left;
+    }
+    if (right<n && this->data[right]>this->data[temp]){
+      temp = right;
+    }
+    if (temp!= pos){
+      this->swap(temp,pos);
+      this->maxHeapify(temp);
+    }
+
+  }
+template <class T>
+  void priority_queue<T>::print()
+  {
+    // IMPLEMENT HERE
+    std::vector<int>::iterator it;
+    for (it = this->data.begin(); it != this->data.end(); ++it)
+        std::cout << *it<<"\t";
+    std::cout << '\n';
   }
 } // namespace getp
